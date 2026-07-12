@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Regieberichte</title>
+
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<header class="header">
+    <img src="../assets/logo.png" class="logo">
+
+    <div class="firma">
+        <h1>Regieberichte</h1>
+        <p>Raimo Fietz Elektrotechnik</p>
+    </div>
+</header>
+
+<main>
+    <div class="karte">
+
+        <button onclick="neuerBericht()">
+            ➕ Neuer Regiebericht
+        </button>
+
+        <div id="liste"></div>
+
+        <button onclick="location.href='auftrag_detail.html'">
+            ← Zurück
+        </button>
+
+    </div>
+</main>
+
+<script src="../js/database.js"></script>
+<script src="../js/regieberichte.js"></script>
+
+</body>
+</html>

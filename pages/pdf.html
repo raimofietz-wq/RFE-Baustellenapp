@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PDF Export</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+
+<header class="header">
+<img
+    src="../assets/logo.png"
+    class="logo"
+    alt="Raimo Fietz Elektrotechnik">
+
+    <div class="firma">
+        <h1>PDF Export</h1>
+        <p>Raimo Fietz Elektrotechnik</p>
+    </div>
+
+</header>
+
+<main>
+
+    <div class="karte">
+
+        <h2>Baustellendokumentation</h2>
+
+        <p id="info"></p>
+
+        <button onclick="pdfErstellen()">
+            📄 PDF erstellen
+        </button>
+
+        <button class="button-zurueck"
+                onclick="location.href='auftrag_detail.html'">
+            ← Zurück
+        </button>
+
+    </div>
+
+</main>
+
+<script src="../js/database.js"></script>
+<script src="../js/pdf.js"></script>
+
+</body>
+
+</html>

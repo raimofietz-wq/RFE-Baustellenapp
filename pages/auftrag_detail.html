@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Auftrag</title>
+
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<header class="header">
+    <img src="../assets/logo.png" class="logo">
+
+    <div class="firma">
+        <h1>Auftragsdetails</h1>
+        <p>Raimo Fietz Elektrotechnik</p>
+    </div>
+</header>
+
+<main>
+
+<div class="karte">
+
+    <h2 id="nummer"></h2>
+
+    <p><strong>Datum:</strong> <span id="datum"></span></p>
+    <p><strong>Kunde:</strong> <span id="kunde"></span></p>
+    <p><strong>Ansprechpartner:</strong> <span id="ansprechpartner"></span></p>
+    <p><strong>Telefon:</strong> <span id="telefon"></span></p>
+    <p><strong>E-Mail:</strong> <span id="email"></span></p>
+    <p><strong>Baustelle:</strong> <span id="baustelle"></span></p>
+    <p><strong>Monteur:</strong> <span id="monteur"></span></p>
+
+    <p><strong>Notizen:</strong></p>
+    <div class="notizen" id="notizen"></div>
+
+    <hr>
+
+    <h3>Übersicht</h3>
+
+    <p>📄 Tätigkeitsnachweise: <strong id="anzTaetigkeit">0</strong></p>
+    <p>📝 Regieberichte: <strong id="anzRegie">0</strong></p>
+    <p>📦 Materialpositionen: <strong id="anzMaterial">0</strong></p>
+    <p>✍️ Unterschrift: <strong id="anzUnterschrift">Nein</strong></p>
+
+    <hr>
+
+    <button onclick="location.href='taetigkeitsnachweise.html'">
+        📄 Tätigkeitsnachweise
+    </button>
+
+    <button onclick="location.href='regieberichte.html'">
+        📝 Regieberichte
+    </button>
+
+    <button onclick="location.href='material.html'">
+        📦 Material
+    </button>
+
+<button onclick="location.href='fotos.html'">
+📷 Fotos
+</button>
+
+    <button onclick="location.href='unterschrift.html'">
+        ✍️ Kundenunterschrift
+    </button>
+
+    <button onclick="location.href='pdf.html'">
+        📄 PDF Export
+    </button>
+
+    <button onclick="bearbeiten()">
+        ✏️ Auftrag bearbeiten
+    </button>
+
+    <button onclick="loeschen()">
+        🗑️ Auftrag löschen
+    </button>
+
+    <button onclick="location.href='archiv.html'">
+        ← Zurück
+    </button>
+
+</div>
+
+</main>
+
+<script src="../js/database.js"></script>
+
+<script>
+
+const id = localStorage.getItem("RFE_AKTUELLER_AUFTRAG");
+const auftrag = getAuftrag(id);
+
+if (!auftrag) {
+    alert("Auftrag nicht gefunden.");
+    location.href = "archiv.html";
+}
+
+document.getElementById("nummer").innerHTML =
+    "Auftrag " + (auftrag.nummer || "");
+
+document.getElementById("datum").innerText =
+    auftrag.datum || "";
+
+document.getElementById("kunde").innerText =
+    auftrag.kunde || "";
+
+document.getElementById("ansprechpartner").innerText =
+    auftrag.ansprechpartner || "";
+
+document.getElementById("telefon").innerText =
+    auftrag.telefon || "";
+
+document.getElementById("email").innerText =
+    auftrag.email || "";
+
+document.getElementById("baustelle").innerText =
+    auftrag.baustelle || "";
+
+document.getElementById("monteur").innerText =
+    auftrag.monteur || "";
+
+document.getElementById("notizen").innerText =
+    auftrag.notizen || "";
+
+document.getElementById("anzTaetigkeit").innerText =
+    auftrag.taetigkeitsnachweise ? auftrag.taetigkeitsnachweise.length : 0;
+
+document.getElementById("anzRegie").innerText =
+    auftrag.regieberichte ? auftrag.regieberichte.length : 0;
+
+document.getElementById("anzMaterial").innerText =
+    auftrag.material ? auftrag.material.length : 0;
+
+document.getElementById("anzUnterschrift").innerText =
+    (auftrag.unterschriften && auftrag.unterschriften.length > 0) ? "Ja" : "Nein";
+
+function bearbeiten() {
+    localStorage.setItem("RFE_BEARBEITEN", id);
+    location.href = "auftrag.html";
+}
+
+function loeschen() {
+    if (confirm("Diesen Auftrag wirklich löschen?")) {
+        deleteAuftrag(id);
+        localStorage.removeItem("RFE_AKTUELLER_AUFTRAG");
+        location.href = "archiv.html";
+    }
+}
+
+</script>
+
+</body>
+</html>

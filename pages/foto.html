@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Foto</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+<img src="../assets/logo.png" class="logo">
+
+<div class="firma">
+
+<h1 id="titel">Foto aufnehmen</h1>
+
+<p>Raimo Fietz Elektrotechnik</p>
+
+</div>
+
+</header>
+
+<main>
+
+<div class="karte">
+
+<input
+    type="file"
+    id="foto"
+    accept="image/*"
+    capture="environment">
+
+<br><br>
+
+<img
+    id="vorschau"
+    style="
+        width:100%;
+        display:none;
+        border-radius:10px;
+    ">
+
+<br><br>
+
+<button onclick="speichern()">
+
+💾 Foto speichern
+
+</button>
+
+<button onclick="location.href='fotos.html'">
+
+← Zurück
+
+</button>
+
+</div>
+
+</main>
+
+<script src="../js/database.js"></script>
+<script src="../js/foto.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Neuer Auftrag</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <img src="../assets/logo.png" class="logo">
+
+    <div class="firma">
+
+        <h1>Auftrag</h1>
+
+        <p>Raimo Fietz Elektrotechnik</p>
+
+    </div>
+
+</header>
+
+<main>
+
+<div class="karte">
+
+<label>Auftragsnummer *</label>
+<input type="text" id="nummer">
+
+<label>Datum</label>
+<input type="date" id="datum">
+
+<label>Kunde</label>
+<input type="text" id="kunde">
+
+<label>Ansprechpartner</label>
+<input type="text" id="ansprechpartner">
+
+<label>Telefon</label>
+<input type="text" id="telefon">
+
+<label>E-Mail</label>
+<input type="email" id="email">
+
+<label>Baustelle</label>
+<input type="text" id="baustelle">
+
+<label>Monteur</label>
+<input type="text" id="monteur">
+
+<label>Notizen</label>
+<textarea id="notizen"></textarea>
+
+<button onclick="auftragSpeichern()">
+💾 Auftrag speichern
+</button>
+
+<button onclick="window.location='archiv.html'">
+← Zurück
+</button>
+
+</div>
+
+</main>
+
+<script src="../js/config.js"></script>
+<script src="../js/database.js"></script>
+
+<script>
+
+// aktuelles Datum einsetzen
+document.getElementById("datum").value =
+new Date().toISOString().substring(0,10);
+
+// Prüfen ob Auftrag bearbeitet wird
+const bearbeitenID = localStorage.getItem("RFE_BEARBEITEN");
+
+if (bearbeitenID) {
+
+    const a = getAuftrag(bearbeitenID);
+
+    if(a){
+
+        document.getElementById("nummer").value = a.nummer || "";
+        document.getElementById("datum").value = a.datum || "";
+        document.getElementById("kunde").value = a.kunde || "";
+        document.getElementById("ansprechpartner").value = a.ansprechpartner || "";
+        document.getElementById("telefon").value = a.telefon || "";
+        document.getElementById("email").value = a.email || "";
+        document.getElementById("baustelle").value = a.baustelle || "";
+        document.getElementById("monteur").value = a.monteur || "";
+        document.getElementById("notizen").value = a.notizen || "";
+
+    }
+
+}
+
+function auftragSpeichern(){
+
+    if(document.getElementById("nummer").value.trim()==""){
+
+        alert("Bitte Auftragsnummer eingeben.");
+
+        return;
+
+    }
+
+    const daten = {
+
+    id: bearbeitenID ? String(bearbeitenID) : Date.now().toString(),
+
+    nummer: document.getElementById("nummer").value,
+
+    datum: document.getElementById("datum").value,
+
+    kunde: document.getElementById("kunde").value,
+
+    ansprechpartner: document.getElementById("ansprechpartner").value,
+
+    telefon: document.getElementById("telefon").value,
+
+    email: document.getElementById("email").value,
+
+    baustelle: document.getElementById("baustelle").value,
+
+    monteur: document.getElementById("monteur").value,
+
+    notizen: document.getElementById("notizen").value,
+
+    taetigkeitsnachweise: [],
+
+    regieberichte: [],
+
+    material: [],
+
+    fotos: [],
+
+    unterschriften: []
+
+};
+
+    if(bearbeitenID){
+
+        updateAuftrag(bearbeitenID,daten);
+
+        localStorage.removeItem("RFE_BEARBEITEN");
+
+        alert("Auftrag aktualisiert.");
+
+    }else{
+
+        addAuftrag(daten);
+
+        alert("Auftrag gespeichert.");
+
+    }
+
+    window.location="archiv.html";
+
+}
+
+</script>
+
+</body>
+
+</html>

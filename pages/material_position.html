@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Materialposition</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+<img src="../assets/logo.png" class="logo">
+
+<div class="firma">
+
+<h1 id="titel">Neue Materialposition</h1>
+
+<p>Raimo Fietz Elektrotechnik</p>
+
+</div>
+
+</header>
+
+<main>
+
+<div class="karte">
+
+<label>Bezeichnung</label>
+<input type="text" id="bezeichnung">
+
+<label>Menge</label>
+<input type="number" id="menge">
+
+<label>Einheit</label>
+
+<select id="einheit">
+
+<option value="Stk">Stk</option>
+<option value="m">m</option>
+<option value="kg">kg</option>
+<option value="ltr">ltr</option>
+<option value="Pack">Pack</option>
+<option value="Rolle">Rolle</option>
+
+</select>
+
+<button onclick="speichern()">
+
+💾 Speichern
+
+</button>
+
+<button onclick="location.href='material.html'">
+
+← Zurück
+
+</button>
+
+</div>
+
+</main>
+
+<script src="../js/database.js"></script>
+<script src="../js/material_position.js"></script>
+
+</body>
+
+</html>

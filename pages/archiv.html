@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Aufträge</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+<img src="../assets/logo.png" class="logo">
+
+<div class="firma">
+
+<h1>Aufträge</h1>
+
+<p>Raimo Fietz Elektrotechnik</p>
+
+</div>
+
+</header>
+
+<main>
+
+<div class="karte">
+
+<input
+type="text"
+id="suche"
+placeholder="Suche..."
+onkeyup="anzeigen()">
+
+<div id="liste"></div>
+
+<button onclick="window.location='../index.html'">
+
+← Zurück
+
+</button>
+
+</div>
+
+</main>
+
+<script src="../js/database.js"></script>
+
+<script>
+
+anzeigen();
+
+function anzeigen(){
+
+    let daten=getAuftraege();
+
+    const suche=document.getElementById("suche").value.toLowerCase();
+
+    daten=daten.filter(a=>{
+
+        return(
+
+            a.nummer.toLowerCase().includes(suche) ||
+
+            a.kunde.toLowerCase().includes(suche) ||
+
+            a.baustelle.toLowerCase().includes(suche)
+
+        );
+
+    });
+
+    const liste=document.getElementById("liste");
+
+    liste.innerHTML="";
+
+    if(daten.length===0){
+
+        liste.innerHTML="<p>Keine Aufträge vorhanden.</p>";
+
+        return;
+
+    }
+
+    daten.forEach(a=>{
+
+        liste.innerHTML+=`
+
+        <div class="auftrag">
+
+            <strong>${a.nummer}</strong><br>
+
+            ${a.kunde}<br>
+
+            ${a.baustelle}<br>
+
+            ${a.datum}
+
+            <br><br>
+
+            <button onclick="oeffnen(${a.id})">
+
+                Öffnen
+
+            </button>
+
+            <button onclick="loeschen(${a.id})">
+
+                Löschen
+
+            </button>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+function oeffnen(id){
+
+    localStorage.setItem("RFE_AKTUELLER_AUFTRAG",id);
+
+    location.href="auftrag_detail.html";
+
+
+}
+
+function loeschen(id){
+
+    if(confirm("Auftrag wirklich löschen?")){
+
+        deleteAuftrag(id);
+
+        anzeigen();
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>

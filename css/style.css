@@ -1,0 +1,613 @@
+/* =========================================================
+   RFE BaustellenApp – Design Version 1.0
+   ========================================================= */
+
+:root {
+    --blau: #0b4ea2;
+    --blau-dunkel: #073b7a;
+    --blau-hell: #eaf2fc;
+
+    --gruen: #218739;
+    --rot: #c62828;
+    --orange: #d66a00;
+
+    --hintergrund: #f2f5f9;
+    --karte: #ffffff;
+
+    --text: #20252b;
+    --text-hell: #68717c;
+
+    --linie: #d8dee7;
+    --radius: 14px;
+
+    --schatten:
+        0 4px 16px rgba(15, 36, 64, 0.10);
+}
+
+
+/* =========================================================
+   Grundeinstellungen
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    background: var(--hintergrund);
+}
+
+body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--hintergrund);
+    color: var(--text);
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    font-size: 16px;
+    line-height: 1.5;
+
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+}
+
+img {
+    max-width: 100%;
+}
+
+h1,
+h2,
+h3 {
+    color: var(--text);
+    line-height: 1.25;
+}
+
+h1 {
+    margin: 0;
+    font-size: 23px;
+}
+
+h2 {
+    margin: 0 0 18px;
+    font-size: 22px;
+    color: var(--blau-dunkel);
+}
+
+h3 {
+    margin: 20px 0 12px;
+    font-size: 18px;
+    color: var(--blau-dunkel);
+}
+
+p {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid var(--linie);
+    margin: 24px 0;
+}
+
+
+/* =========================================================
+   Kopfbereich
+   ========================================================= */
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    min-height: 105px;
+    padding:
+        calc(18px + env(safe-area-inset-top))
+        20px
+        18px;
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blau-dunkel),
+            var(--blau)
+        );
+
+    box-shadow:
+        0 3px 12px rgba(0, 33, 80, 0.20);
+}
+
+.header h1 {
+    color: #ffffff;
+}
+
+.header p {
+    margin: 5px 0 0;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 14px;
+}
+
+.logo {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+
+    object-fit: contain;
+
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 5px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.firma {
+    min-width: 0;
+}
+
+
+/* =========================================================
+   Hauptbereich und Karten
+   ========================================================= */
+
+main {
+    width: 100%;
+    max-width: 850px;
+
+    margin: 0 auto;
+    padding:
+        22px
+        16px
+        calc(32px + env(safe-area-inset-bottom));
+}
+
+.karte {
+    width: 100%;
+    padding: 22px;
+
+    background: var(--karte);
+    border: 1px solid rgba(216, 222, 231, 0.85);
+    border-radius: var(--radius);
+
+    box-shadow: var(--schatten);
+}
+
+.karte + .karte {
+    margin-top: 18px;
+}
+
+.notizen {
+    min-height: 75px;
+    padding: 14px;
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+
+    background: #f7f9fc;
+    border: 1px solid var(--linie);
+    border-radius: 10px;
+
+    color: var(--text);
+}
+
+
+/* =========================================================
+   Formulare
+   ========================================================= */
+
+label {
+    display: block;
+    margin: 17px 0 7px;
+
+    font-weight: 650;
+    font-size: 15px;
+    color: #303841;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    min-height: 48px;
+
+    padding: 12px 13px;
+
+    color: var(--text);
+    background: #ffffff;
+
+    border: 1px solid #bdc7d4;
+    border-radius: 10px;
+
+    font: inherit;
+    font-size: 16px;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease;
+}
+
+textarea {
+    min-height: 125px;
+    resize: vertical;
+}
+
+select {
+    appearance: auto;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--blau);
+
+    box-shadow:
+        0 0 0 3px rgba(11, 78, 162, 0.14);
+}
+
+input[readonly] {
+    background: #edf1f5;
+    color: #3e4751;
+    font-weight: 650;
+}
+
+input[type="file"] {
+    min-height: auto;
+    padding: 12px;
+    background: #f7f9fc;
+}
+
+input[type="date"],
+input[type="time"] {
+    min-height: 48px;
+}
+
+
+/* =========================================================
+   Buttons
+   ========================================================= */
+
+button {
+    width: 100%;
+    min-height: 56px;
+
+    margin-top: 14px;
+    padding: 13px 16px;
+
+    color: #ffffff;
+    background: var(--blau);
+
+    border: 0;
+    border-radius: 11px;
+
+    font: inherit;
+    font-size: 17px;
+    font-weight: 650;
+    text-align: center;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 3px 8px rgba(11, 78, 162, 0.22);
+
+    transition:
+        transform 0.1s ease,
+        background-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+button:hover {
+    background: var(--blau-dunkel);
+}
+
+button:active {
+    transform: scale(0.985);
+    box-shadow:
+        0 1px 4px rgba(11, 78, 162, 0.22);
+}
+
+button:focus-visible {
+    outline: 3px solid rgba(11, 78, 162, 0.25);
+    outline-offset: 3px;
+}
+
+
+/* Optionale Buttonklassen */
+
+.button-speichern {
+    background: var(--gruen);
+}
+
+.button-speichern:hover {
+    background: #176b2c;
+}
+
+.button-loeschen {
+    background: var(--rot);
+}
+
+.button-loeschen:hover {
+    background: #9f1e1e;
+}
+
+.button-bearbeiten {
+    background: var(--orange);
+}
+
+.button-bearbeiten:hover {
+    background: #ad5500;
+}
+
+.button-zurueck {
+    color: #303841;
+    background: #e5e9ef;
+
+    box-shadow:
+        0 2px 6px rgba(35, 46, 60, 0.12);
+}
+
+.button-zurueck:hover {
+    background: #d5dbe3;
+}
+
+
+/* =========================================================
+   Listen, Archiv und Einträge
+   ========================================================= */
+
+.auftrag {
+    margin-top: 16px;
+    padding: 17px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--linie);
+    border-left: 5px solid var(--blau);
+    border-radius: 11px;
+
+    box-shadow:
+        0 2px 8px rgba(21, 38, 60, 0.08);
+}
+
+.auftrag strong {
+    display: inline-block;
+    margin-bottom: 3px;
+
+    color: var(--blau-dunkel);
+    font-size: 18px;
+}
+
+.auftrag button {
+    min-height: 46px;
+    margin-top: 10px;
+    font-size: 15px;
+}
+
+#liste > p {
+    padding: 18px;
+
+    color: var(--text-hell);
+    text-align: center;
+
+    background: #f7f9fc;
+    border: 1px dashed #c4ccd7;
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   Unterschrift und Fotos
+   ========================================================= */
+
+canvas {
+    display: block;
+
+    width: 100%;
+    height: 250px;
+
+    margin: 16px 0 20px;
+
+    background: #ffffff;
+
+    border: 2px solid var(--blau);
+    border-radius: 11px;
+
+    touch-action: none;
+
+    box-shadow:
+        inset 0 1px 5px rgba(0, 0, 0, 0.06);
+}
+
+#vorschau {
+    display: block;
+    width: 100%;
+
+    max-height: 520px;
+
+    object-fit: contain;
+
+    background: #f2f4f7;
+    border: 1px solid var(--linie);
+    border-radius: 11px;
+}
+
+.auftrag img {
+    display: block;
+
+    width: 100%;
+    max-height: 300px;
+
+    object-fit: cover;
+
+    border-radius: 9px;
+}
+
+
+/* =========================================================
+   Tabellen
+   ========================================================= */
+
+table {
+    width: 100%;
+    margin-top: 14px;
+
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+th,
+td {
+    padding: 11px 9px;
+
+    border: 1px solid var(--linie);
+
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    color: #ffffff;
+    background: var(--blau);
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   Fußbereich
+   ========================================================= */
+
+footer {
+    padding:
+        12px
+        16px
+        calc(18px + env(safe-area-inset-bottom));
+
+    color: var(--text-hell);
+    font-size: 13px;
+    text-align: center;
+}
+
+
+/* =========================================================
+   Kleine Bildschirme / iPhone
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .header {
+        min-height: 92px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .logo {
+        width: 60px;
+        height: 60px;
+    }
+
+    .header h1 {
+        font-size: 19px;
+    }
+
+    .header p {
+        font-size: 13px;
+    }
+
+    main {
+        padding-left: 11px;
+        padding-right: 11px;
+    }
+
+    .karte {
+        padding: 17px;
+        border-radius: 12px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    button {
+        min-height: 57px;
+        font-size: 17px;
+    }
+
+    input,
+    textarea,
+    select {
+        font-size: 16px;
+    }
+
+    canvas {
+        height: 220px;
+    }
+
+}
+
+
+/* =========================================================
+   Große Bildschirme
+   ========================================================= */
+
+@media (min-width: 900px) {
+
+    main {
+        padding-top: 32px;
+    }
+
+    .karte {
+        padding: 28px;
+    }
+
+}
+
+
+/* =========================================================
+   Druckansicht
+   ========================================================= */
+
+@media print {
+
+    body {
+        background: #ffffff;
+    }
+
+    .header {
+        color: #000000;
+        background: #ffffff;
+        box-shadow: none;
+        border-bottom: 2px solid #000000;
+    }
+
+    .header h1,
+    .header p {
+        color: #000000;
+    }
+
+    main {
+        max-width: none;
+        padding: 10mm;
+    }
+
+    .karte,
+    .auftrag {
+        box-shadow: none;
+    }
+
+    button {
+        display: none;
+    }
+
+}

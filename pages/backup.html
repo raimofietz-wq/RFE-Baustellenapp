@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Datensicherung</title>
+
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <img src="../assets/logo.png" class="logo">
+
+    <div class="firma">
+        <h1>Datensicherung</h1>
+        <p>Raimo Fietz Elektrotechnik</p>
+    </div>
+
+</header>
+
+<main>
+
+<div class="karte">
+
+    <p>
+        Hier kannst du alle Aufträge, Tätigkeitsnachweise,
+        Regieberichte, Materialien, Fotos und Unterschriften sichern.
+    </p>
+
+    <button onclick="backupErstellen()">
+        ⬇️ Backup erstellen
+    </button>
+
+    <label for="backupDatei">Backup wiederherstellen</label>
+
+    <input
+        type="file"
+        id="backupDatei"
+        accept=".json,application/json"
+    >
+
+    <button onclick="backupImportieren()">
+        ⬆️ Backup wiederherstellen
+    </button>
+
+    <button onclick="location.href='../index.html'">
+        ← Zurück
+    </button>
+
+</div>
+
+</main>
+
+<script src="../js/database.js"></script>
+<script src="../js/backup.js"></script>
+
+</body>
+
+</html>

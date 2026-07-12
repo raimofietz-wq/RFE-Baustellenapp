@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Kundenunterschrift</title>
+
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <img src="../assets/logo.png" class="logo" alt="Firmenlogo">
+
+    <div class="firma">
+        <h1>Kundenunterschrift</h1>
+        <p>Raimo Fietz Elektrotechnik</p>
+    </div>
+
+</header>
+
+<main>
+
+<div class="karte">
+
+    <h2 id="auftragTitel"></h2>
+
+    <canvas id="canvas" width="800" height="350"></canvas>
+
+    <button class="button-loeschen" onclick="leeren()">
+        🧹 Unterschrift löschen
+    </button>
+
+    <button class="button-speichern" onclick="speichern()">
+        💾 Unterschrift speichern
+    </button>
+
+    <button class="button-zurueck"
+            onclick="location.href='auftrag_detail.html'">
+        ← Zurück
+    </button>
+
+</div>
+
+</main>
+
+<script src="../js/database.js"></script>
+
+<script>
+
+const auftragID =
+    localStorage.getItem("RFE_AKTUELLER_AUFTRAG");
+
+let auftrag = getAuftrag(auftragID);
+
+if (!auftrag) {
+    alert("Auftrag nicht gefunden.");
+    location.href = "archiv.html";
+}
+
+if (!auftrag.unterschriften) {
+    auftrag.unterschriften = [];
+}
+
+document.getElementById("auftragTitel").innerText =
+    "Auftrag " + (auftrag.nummer || "");
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+ctx.lineWidth = 3;
+ctx.lineCap = "round";
+ctx.lineJoin = "round";
+ctx.strokeStyle = "#20252b";
+
+let zeichnet = false;
+
+function position(event) {
+
+    const rect = canvas.getBoundingClientRect();
+
+    const quelle =
+        event.touches && event.touches.length
+            ? event.touches[0]
+            : event;
+
+    return {
+        x: (quelle.clientX - rect.left) *
+           (canvas.width / rect.width),
+
+        y: (quelle.clientY - rect.top) *
+           (canvas.height / rect.height)
+    };
+}
+
+function start(event) {
+
+    zeichnet = true;
+
+    const punkt = position(event);
+
+    ctx.beginPath();
+    ctx.moveTo(punkt.x, punkt.y);
+
+    event.preventDefault();
+}
+
+function bewegen(event) {
+
+    if (!zeichnet) {
+        return;
+    }
+
+    const punkt = position(event);
+
+    ctx.lineTo(punkt.x, punkt.y);
+    ctx.stroke();
+
+    event.preventDefault();
+}
+
+function ende(event) {
+
+    zeichnet = false;
+    ctx.closePath();
+
+    if (event) {
+        event.preventDefault();
+    }
+}
+
+canvas.addEventListener("mousedown", start);
+canvas.addEventListener("mousemove", bewegen);
+canvas.addEventListener("mouseup", ende);
+canvas.addEventListener("mouseleave", ende);
+
+canvas.addEventListener("touchstart", start, {
+    passive: false
+});
+
+canvas.addEventListener("touchmove", bewegen, {
+    passive: false
+});
+
+canvas.addEventListener("touchend", ende, {
+    passive: false
+});
+
+function leeren() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function gespeicherteUnterschriftLaden() {
+
+    if (
+        auftrag.unterschriften.length === 0 ||
+        !auftrag.unterschriften[0]
+    ) {
+        return;
+    }
+
+    const bild = new Image();
+
+    bild.onload = function() {
+        ctx.drawImage(
+            bild,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+    };
+
+    bild.src = auftrag.unterschriften[0];
+}
+
+function speichern() {
+
+    const unterschrift =
+        canvas.toDataURL("image/png");
+
+    auftrag.unterschriften = [unterschrift];
+
+    /*
+       Altes Datenfeld entfernen, damit es keine
+       zwei unterschiedlichen Speicherorte gibt.
+    */
+    delete auftrag.unterschrift;
+
+    updateAuftrag(auftragID, auftrag);
+
+    alert("Unterschrift gespeichert.");
+
+    location.href = "auftrag_detail.html";
+}
+
+gespeicherteUnterschriftLaden();
+
+</script>
+
+</body>
+</html>

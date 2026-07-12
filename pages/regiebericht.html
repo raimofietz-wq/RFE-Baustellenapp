@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Regiebericht</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+<img src="../assets/logo.png" class="logo">
+
+<div class="firma">
+
+<h1 id="titel">Neuer Regiebericht</h1>
+
+<p>Raimo Fietz Elektrotechnik</p>
+
+</div>
+
+</header>
+
+<main>
+
+<div class="karte">
+
+<label>Datum</label>
+<input type="date" id="datum">
+
+<label>Monteur</label>
+<input type="text" id="monteur">
+
+<label>Beginn</label>
+<input type="time" id="beginn">
+
+<label>Ende</label>
+<input type="time" id="ende">
+
+<label>Pause (Minuten)</label>
+<input type="number" id="pause" value="30">
+
+<label>Arbeitsstunden</label>
+<input type="text" id="stunden" readonly>
+
+<label>Ausgeführte Arbeiten</label>
+<textarea id="arbeiten"></textarea>
+
+<label>Bemerkungen</label>
+<textarea id="bemerkung"></textarea>
+
+<button onclick="stundenBerechnen()">
+⏱ Stunden berechnen
+</button>
+
+<button onclick="speichern()">
+💾 Speichern
+</button>
+
+<button onclick="location.href='regieberichte.html'">
+← Zurück
+</button>
+
+</div>
+
+</main>
+
+<script src="../js/database.js"></script>
+<script src="../js/regiebericht.js"></script>
+
+</body>
+
+</html>
