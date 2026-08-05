@@ -1,4 +1,4 @@
-const CACHE_NAME = "rfe-baustellenapp-v1.0.4";
+const CACHE_NAME = "rfe-baustellenapp-v1.0.6";
 
 const APP_DATEIEN = [
     "",
@@ -17,6 +17,7 @@ const APP_DATEIEN = [
     "js/backup.js",
     "js/foto.js",
     "js/fotos.js",
+    "js/foto-database.js",
     "js/material.js",
     "js/material_position.js",
     "js/pdf.js",

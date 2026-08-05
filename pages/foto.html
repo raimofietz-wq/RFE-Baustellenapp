@@ -2,29 +2,27 @@
 <html lang="de">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foto hinzufügen</title>
 
-<title>Foto</title>
-
-<link rel="stylesheet" href="../css/style.css">
-
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body>
 
 <header class="header">
 
-<img src="../assets/logo.png" class="logo">
+    <img src="../assets/logo.png"
+         class="logo"
+         alt="Firmenlogo">
 
-<div class="firma">
-
-<h1 id="titel">Foto aufnehmen</h1>
-
-<p>Raimo Fietz Elektrotechnik</p>
-
-</div>
+    <div class="firma">
+        <h1 id="titel">Foto hinzufügen</h1>
+        <p>Raimo Fietz Elektrotechnik</p>
+    </div>
 
 </header>
 
@@ -32,43 +30,58 @@
 
 <div class="karte">
 
-<input
-    type="file"
-    id="foto"
-    accept="image/*"
-    capture="environment">
+    <h2>Bild auswählen</h2>
 
-<br><br>
+    <!-- Öffnet auf dem iPad direkt die Kamera -->
+    <label for="kamera">Foto aufnehmen</label>
 
-<img
-    id="vorschau"
-    style="
-        width:100%;
-        display:none;
-        border-radius:10px;
-    ">
+    <input
+        type="file"
+        id="kamera"
+        accept="image/*"
+        capture="environment"
+    >
 
-<br><br>
+    <!-- Öffnet Mediathek beziehungsweise Dateien/iCloud -->
+    <label for="mediathek">
+        Aus Mediathek oder Dateien auswählen
+    </label>
 
-<button onclick="speichern()">
+    <input
+        type="file"
+        id="mediathek"
+        accept="image/*"
+    >
 
-💾 Foto speichern
+    <p id="status"></p>
 
-</button>
+    <img
+        id="vorschau"
+        alt="Fotovorschau"
+        style="display:none;"
+    >
 
-<button onclick="location.href='fotos.html'">
+    <button
+        class="button-speichern"
+        id="speichernButton"
+        onclick="speichern()"
+        disabled>
+        💾 Foto speichern
+    </button>
 
-← Zurück
-
-</button>
+    <button
+        class="button-zurueck"
+        onclick="zurueck()">
+        ← Zurück
+    </button>
 
 </div>
 
 </main>
 
 <script src="../js/database.js"></script>
+<script src="../js/foto-database.js"></script>
 <script src="../js/foto.js"></script>
 
 </body>
-
 </html>
