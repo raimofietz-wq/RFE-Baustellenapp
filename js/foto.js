@@ -1,13 +1,13 @@
+/* =========================================================
+   RFE BaustellenApp
+   Foto aufnehmen, auswählen und in IndexedDB speichern
+   ========================================================= */
+
 const auftragID =
     localStorage.getItem("RFE_AKTUELLER_AUFTRAG");
 
-const fotoIndexText =
-    localStorage.getItem("RFE_FOTO_INDEX");
-
-const fotoIndex =
-    fotoIndexText === null
-        ? null
-        : Number(fotoIndexText);
+const fotoID =
+    localStorage.getItem("RFE_FOTO_ID");
 
 let auftrag = getAuftrag(auftragID);
 
@@ -17,9 +17,10 @@ if (!auftrag) {
     throw new Error("Auftrag nicht gefunden.");
 }
 
-if (!Array.isArray(auftrag.fotos)) {
-    auftrag.fotos = [];
-}
+
+/* =========================================================
+   Elemente der Seite
+   ========================================================= */
 
 const kamera =
     document.getElementById("kamera");
@@ -30,88 +31,165 @@ const mediathek =
 const vorschau =
     document.getElementById("vorschau");
 
-const status =
+const statusElement =
     document.getElementById("status");
 
 const speichernButton =
     document.getElementById("speichernButton");
 
+const titelElement =
+    document.getElementById("titel");
+
+
 let bildDaten = null;
+let vorhandenesFoto = null;
 
 
-/*
- * Vorhandenes Foto beim Öffnen anzeigen.
- */
-if (
-    fotoIndex !== null &&
-    auftrag.fotos[fotoIndex]
-) {
-    const vorhandenesFoto =
-        auftrag.fotos[fotoIndex];
+/* =========================================================
+   Seite initialisieren
+   ========================================================= */
 
-    bildDaten =
-        vorhandenesFoto.bild ||
-        vorhandenesFoto;
+initialisieren();
 
-    document.getElementById("titel").innerText =
-        "Foto anzeigen";
 
-    vorschau.src = bildDaten;
-    vorschau.style.display = "block";
+async function initialisieren() {
 
-    speichernButton.disabled = false;
+    /*
+     * Wird ein bestehendes Foto geöffnet,
+     * laden wir es anhand seiner eindeutigen ID.
+     */
+    if (fotoID) {
+
+        try {
+
+            vorhandenesFoto =
+                await fotoDBLaden(fotoID);
+
+            if (!vorhandenesFoto) {
+
+                alert("Foto nicht gefunden.");
+
+                localStorage.removeItem(
+                    "RFE_FOTO_ID"
+                );
+
+                location.href = "fotos.html";
+
+                return;
+            }
+
+            bildDaten =
+                vorhandenesFoto.bild;
+
+            titelElement.innerText =
+                "Foto anzeigen";
+
+            vorschau.src =
+                bildDaten;
+
+            vorschau.style.display =
+                "block";
+
+            statusElement.innerText =
+                "Gespeichertes Foto";
+
+            speichernButton.disabled =
+                false;
+
+        } catch (fehler) {
+
+            console.error(
+                "Foto konnte nicht geladen werden:",
+                fehler
+            );
+
+            alert(
+                "Das Foto konnte nicht geladen werden."
+            );
+        }
+    }
 }
 
 
-/*
- * Beide Auswahlfelder verwenden dieselbe Verarbeitung.
- */
-kamera.addEventListener("change", dateiAusgewaehlt);
-mediathek.addEventListener("change", dateiAusgewaehlt);
+/* =========================================================
+   Kamera und Mediathek
+   ========================================================= */
+
+kamera.addEventListener(
+    "change",
+    dateiAusgewaehlt
+);
+
+mediathek.addEventListener(
+    "change",
+    dateiAusgewaehlt
+);
 
 
 async function dateiAusgewaehlt(event) {
 
-    const datei = event.target.files[0];
+    const datei =
+        event.target.files[0];
 
     if (!datei) {
         return;
     }
 
-    if (!datei.type.startsWith("image/")) {
-        alert("Bitte eine Bilddatei auswählen.");
+    if (
+        !datei.type ||
+        !datei.type.startsWith("image/")
+    ) {
+
+        alert(
+            "Bitte eine Bilddatei auswählen."
+        );
+
         event.target.value = "";
+
         return;
     }
 
-    status.innerText =
+    statusElement.innerText =
         "Bild wird vorbereitet …";
 
-    speichernButton.disabled = true;
+    speichernButton.disabled =
+        true;
 
     try {
 
-        bildDaten = await bildKomprimieren(
-            datei,
-            1600,
-            0.72
-        );
+        /*
+         * Das Foto wird vor dem Speichern verkleinert.
+         * Das spart Speicherplatz und beschleunigt das PDF.
+         */
+        bildDaten =
+            await bildKomprimieren(
+                datei,
+                1800,
+                0.78
+            );
 
-        vorschau.src = bildDaten;
-        vorschau.style.display = "block";
+        vorschau.src =
+            bildDaten;
 
-        status.innerText =
+        vorschau.style.display =
+            "block";
+
+        statusElement.innerText =
             "Bild ist bereit zum Speichern.";
 
-        speichernButton.disabled = false;
+        speichernButton.disabled =
+            false;
 
         /*
-         * Verhindert, dass beide Eingabefelder
-         * gleichzeitig eine alte Auswahl enthalten.
+         * Nur eines der beiden Dateifelder
+         * soll eine Auswahl enthalten.
          */
         if (event.target === kamera) {
+
             mediathek.value = "";
+
         } else {
+
             kamera.value = "";
         }
 
@@ -122,7 +200,10 @@ async function dateiAusgewaehlt(event) {
             fehler
         );
 
-        status.innerText = "";
+        statusElement.innerText = "";
+
+        speichernButton.disabled =
+            true;
 
         alert(
             "Das Bild konnte nicht verarbeitet werden."
@@ -131,160 +212,255 @@ async function dateiAusgewaehlt(event) {
 }
 
 
-/*
- * Verkleinert ein Bild auf maximal 1600 Pixel
- * und speichert es als komprimiertes JPEG.
- */
+/* =========================================================
+   Bild verkleinern und komprimieren
+   ========================================================= */
+
 function bildKomprimieren(
     datei,
     maximaleKantenlaenge,
     qualitaet
 ) {
-    return new Promise(function(resolve, reject) {
 
-        const reader = new FileReader();
+    return new Promise(
+        function(resolve, reject) {
 
-        reader.onerror = function() {
-            reject(
-                new Error("Datei konnte nicht gelesen werden.")
+            const reader =
+                new FileReader();
+
+            reader.onerror =
+                function() {
+
+                    reject(
+                        new Error(
+                            "Die Bilddatei konnte nicht gelesen werden."
+                        )
+                    );
+                };
+
+            reader.onload =
+                function() {
+
+                    const bild =
+                        new Image();
+
+                    bild.onerror =
+                        function() {
+
+                            reject(
+                                new Error(
+                                    "Das Bild konnte nicht geladen werden."
+                                )
+                            );
+                        };
+
+                    bild.onload =
+                        function() {
+
+                            let breite =
+                                bild.naturalWidth;
+
+                            let hoehe =
+                                bild.naturalHeight;
+
+                            /*
+                             * Seitenverhältnis beibehalten.
+                             */
+                            if (
+                                breite >
+                                maximaleKantenlaenge ||
+                                hoehe >
+                                maximaleKantenlaenge
+                            ) {
+
+                                const faktor =
+                                    Math.min(
+                                        maximaleKantenlaenge /
+                                        breite,
+
+                                        maximaleKantenlaenge /
+                                        hoehe
+                                    );
+
+                                breite =
+                                    Math.round(
+                                        breite *
+                                        faktor
+                                    );
+
+                                hoehe =
+                                    Math.round(
+                                        hoehe *
+                                        faktor
+                                    );
+                            }
+
+                            const canvas =
+                                document.createElement(
+                                    "canvas"
+                                );
+
+                            canvas.width =
+                                breite;
+
+                            canvas.height =
+                                hoehe;
+
+                            const context =
+                                canvas.getContext(
+                                    "2d"
+                                );
+
+                            if (!context) {
+
+                                reject(
+                                    new Error(
+                                        "Bildverarbeitung ist nicht verfügbar."
+                                    )
+                                );
+
+                                return;
+                            }
+
+                            /*
+                             * Weißer Hintergrund verhindert
+                             * schwarze Flächen bei Transparenz.
+                             */
+                            context.fillStyle =
+                                "#ffffff";
+
+                            context.fillRect(
+                                0,
+                                0,
+                                breite,
+                                hoehe
+                            );
+
+                            context.drawImage(
+                                bild,
+                                0,
+                                0,
+                                breite,
+                                hoehe
+                            );
+
+                            const komprimiert =
+                                canvas.toDataURL(
+                                    "image/jpeg",
+                                    qualitaet
+                                );
+
+                            resolve(
+                                komprimiert
+                            );
+                        };
+
+                    bild.src =
+                        reader.result;
+                };
+
+            reader.readAsDataURL(
+                datei
             );
-        };
-
-        reader.onload = function() {
-
-            const bild = new Image();
-
-            bild.onerror = function() {
-                reject(
-                    new Error("Bild konnte nicht geladen werden.")
-                );
-            };
-
-            bild.onload = function() {
-
-                let breite = bild.naturalWidth;
-                let hoehe = bild.naturalHeight;
-
-                if (
-                    breite > maximaleKantenlaenge ||
-                    hoehe > maximaleKantenlaenge
-                ) {
-                    const faktor = Math.min(
-                        maximaleKantenlaenge / breite,
-                        maximaleKantenlaenge / hoehe
-                    );
-
-                    breite = Math.round(
-                        breite * faktor
-                    );
-
-                    hoehe = Math.round(
-                        hoehe * faktor
-                    );
-                }
-
-                const canvas =
-                    document.createElement("canvas");
-
-                canvas.width = breite;
-                canvas.height = hoehe;
-
-                const context =
-                    canvas.getContext("2d");
-
-                /*
-                 * Weißer Hintergrund verhindert
-                 * schwarze Flächen bei transparenten Bildern.
-                 */
-                context.fillStyle = "#ffffff";
-
-                context.fillRect(
-                    0,
-                    0,
-                    breite,
-                    hoehe
-                );
-
-                context.drawImage(
-                    bild,
-                    0,
-                    0,
-                    breite,
-                    hoehe
-                );
-
-                const komprimiert =
-                    canvas.toDataURL(
-                        "image/jpeg",
-                        qualitaet
-                    );
-
-                resolve(komprimiert);
-            };
-
-            bild.src = reader.result;
-        };
-
-        reader.readAsDataURL(datei);
-    });
+        }
+    );
 }
 
 
-function speichern() {
+/* =========================================================
+   Foto speichern
+   ========================================================= */
+
+async function speichern() {
 
     if (!bildDaten) {
+
         alert(
             "Bitte zuerst ein Foto aufnehmen oder auswählen."
         );
+
         return;
     }
 
-    const jetzt = new Date();
+    speichernButton.disabled =
+        true;
 
-    /*
-     * Beim Bearbeiten bleiben Datum und Uhrzeit
-     * des vorhandenen Fotos erhalten.
-     */
-    let eintrag = {
-        bild: bildDaten,
-        datum: jetzt.toLocaleDateString("de-DE"),
-        uhrzeit: jetzt.toLocaleTimeString(
-            "de-DE",
-            {
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        )
+    statusElement.innerText =
+        "Foto wird gespeichert …";
+
+    const jetzt =
+        new Date();
+
+    const eintrag = {
+
+        /*
+         * Beim Bearbeiten wird dieselbe ID verwendet.
+         * Bei einem neuen Foto erzeugt fotoDBSpeichern()
+         * automatisch eine neue ID.
+         */
+        id:
+            vorhandenesFoto
+                ? vorhandenesFoto.id
+                : undefined,
+
+        auftragID:
+            String(auftragID),
+
+        bild:
+            bildDaten,
+
+        datum:
+            vorhandenesFoto &&
+            vorhandenesFoto.datum
+                ? vorhandenesFoto.datum
+                : jetzt.toLocaleDateString(
+                    "de-DE"
+                ),
+
+        uhrzeit:
+            vorhandenesFoto &&
+            vorhandenesFoto.uhrzeit
+                ? vorhandenesFoto.uhrzeit
+                : jetzt.toLocaleTimeString(
+                    "de-DE",
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                ),
+
+        beschreibung:
+            vorhandenesFoto
+                ? vorhandenesFoto.beschreibung || ""
+                : "",
+
+        erstelltAm:
+            vorhandenesFoto &&
+            vorhandenesFoto.erstelltAm
+                ? vorhandenesFoto.erstelltAm
+                : jetzt.toISOString()
     };
-
-    if (
-        fotoIndex !== null &&
-        auftrag.fotos[fotoIndex]
-    ) {
-        const alt = auftrag.fotos[fotoIndex];
-
-        eintrag.datum =
-            alt.datum || eintrag.datum;
-
-        eintrag.uhrzeit =
-            alt.uhrzeit || eintrag.uhrzeit;
-
-        auftrag.fotos[fotoIndex] = eintrag;
-
-    } else {
-
-        auftrag.fotos.push(eintrag);
-    }
 
     try {
 
-        updateAuftrag(auftragID, auftrag);
+        await fotoDBSpeichern(
+            eintrag
+        );
 
+        localStorage.removeItem(
+            "RFE_FOTO_ID"
+        );
+
+        /*
+         * Alte Index-Auswahl aus der bisherigen
+         * localStorage-Version ebenfalls entfernen.
+         */
         localStorage.removeItem(
             "RFE_FOTO_INDEX"
         );
 
-        location.href = "fotos.html";
+        location.href =
+            "fotos.html";
 
     } catch (fehler) {
 
@@ -293,29 +469,33 @@ function speichern() {
             fehler
         );
 
-        if (
-            fehler.name === "QuotaExceededError" ||
-            fehler.code === 22
-        ) {
-            alert(
-                "Der lokale Speicher ist voll. " +
-                "Bitte zunächst ein Backup erstellen " +
-                "und nicht benötigte oder alte Fotos löschen."
-            );
-        } else {
-            alert(
-                "Das Foto konnte nicht gespeichert werden."
-            );
-        }
+        statusElement.innerText =
+            "";
+
+        speichernButton.disabled =
+            false;
+
+        alert(
+            "Das Foto konnte nicht gespeichert werden."
+        );
     }
 }
 
 
+/* =========================================================
+   Zurück zur Fotoliste
+   ========================================================= */
+
 function zurueck() {
+
+    localStorage.removeItem(
+        "RFE_FOTO_ID"
+    );
 
     localStorage.removeItem(
         "RFE_FOTO_INDEX"
     );
 
-    location.href = "fotos.html";
+    location.href =
+        "fotos.html";
 }

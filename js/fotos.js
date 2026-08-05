@@ -1,64 +1,78 @@
-const auftragID = localStorage.getItem("RFE_AKTUELLER_AUFTRAG");
+const auftragID =
+    localStorage.getItem("RFE_AKTUELLER_AUFTRAG");
 
-const auftrag = getAuftrag(auftragID);
+const auftrag =
+    getAuftrag(auftragID);
 
 if (!auftrag) {
 
     alert("Auftrag nicht gefunden.");
 
     location.href = "archiv.html";
-
 }
 
-if (!auftrag.fotos) {
-
-    auftrag.fotos = [];
-
-    updateAuftrag(auftragID, auftrag);
-
-}
-
+/*
+ * Fotos aus IndexedDB laden
+ */
 anzeigen();
 
-function anzeigen() {
 
-    const liste = document.getElementById("liste");
+async function anzeigen() {
+
+    const liste =
+        document.getElementById("liste");
 
     liste.innerHTML = "";
 
-    if (auftrag.fotos.length === 0) {
+    const fotos =
+        await fotoDBAlleFuerAuftrag(
+            auftragID
+        );
 
-        liste.innerHTML = "<p>Noch keine Fotos vorhanden.</p>";
+    if (fotos.length === 0) {
+
+        liste.innerHTML =
+            "<p>Noch keine Fotos vorhanden.</p>";
 
         return;
-
     }
 
-    auftrag.fotos.forEach(function(foto, index) {
+    fotos.forEach(function(foto) {
 
         liste.innerHTML += `
 
         <div class="auftrag">
 
-            <img src="${foto.bild}" style="width:100%;border-radius:8px;max-height:220px;object-fit:cover;">
+            <img
+                src="${foto.bild}"
+                style="
+                    width:100%;
+                    border-radius:8px;
+                    max-height:220px;
+                    object-fit:cover;
+                ">
 
-<br>
+            <br>
 
-<small>
+            <small>
 
-${foto.datum} &nbsp; ${foto.uhrzeit}
+                ${foto.datum}
+                &nbsp;
+                ${foto.uhrzeit}
 
-</small>
+            </small>
 
             <br><br>
 
-            <button onclick="anzeigenFoto(${index})">
+            <button
+                onclick="anzeigenFoto('${foto.id}')">
 
                 🔍 Anzeigen
 
             </button>
 
-            <button onclick="loeschen(${index})">
+            <button
+                onclick="loeschen('${foto.id}')">
 
                 🗑️ Löschen
 
@@ -72,32 +86,57 @@ ${foto.datum} &nbsp; ${foto.uhrzeit}
 
 }
 
-function neuesFoto(){
+
+function neuesFoto() {
+
+    localStorage.removeItem(
+        "RFE_FOTO_ID"
+    );
 
     location.href = "foto.html";
-
 }
 
-function anzeigenFoto(index){
 
-    localStorage.setItem("RFE_FOTO_INDEX", index);
+function anzeigenFoto(fotoID) {
 
-    location.href = "foto.html";
+    localStorage.setItem(
+        "RFE_FOTO_ID",
+        fotoID
+    );
 
+    location.href =
+        "foto.html";
 }
 
-function loeschen(index){
 
-    if(!confirm("Foto löschen?")){
+async function loeschen(fotoID) {
+
+    if (
+        !confirm(
+            "Foto wirklich löschen?"
+        )
+    ) {
 
         return;
-
     }
 
-    auftrag.fotos.splice(index,1);
+    try {
 
-    updateAuftrag(auftragID, auftrag);
+        await fotoDBLoeschen(
+            fotoID
+        );
 
-    anzeigen();
+        anzeigen();
+
+    } catch (fehler) {
+
+        console.error(
+            fehler
+        );
+
+        alert(
+            "Foto konnte nicht gelöscht werden."
+        );
+    }
 
 }
