@@ -40,6 +40,8 @@ const speichernButton =
 const titelElement =
     document.getElementById("titel");
 
+const beschreibung =
+    document.getElementById("beschreibung");
 
 let bildDaten = null;
 let vorhandenesFoto = null;
@@ -80,6 +82,8 @@ async function initialisieren() {
 
             bildDaten =
                 vorhandenesFoto.bild;
+                beschreibung.value =
+                vorhandenesFoto.beschreibung || "";
 
             titelElement.innerText =
                 "Foto anzeigen";
@@ -430,9 +434,7 @@ async function speichern() {
                 ),
 
         beschreibung:
-            vorhandenesFoto
-                ? vorhandenesFoto.beschreibung || ""
-                : "",
+    beschreibung.value.trim(),
 
         erstelltAm:
             vorhandenesFoto &&

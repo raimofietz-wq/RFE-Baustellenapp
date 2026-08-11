@@ -56,11 +56,21 @@ async function anzeigen() {
 
             <small>
 
-                ${foto.datum}
-                &nbsp;
-                ${foto.uhrzeit}
+    ${foto.datum}
+    &nbsp;
+    ${foto.uhrzeit}
 
-            </small>
+</small>
+
+${foto.beschreibung ? `
+    <p style="
+        margin-top:8px;
+        margin-bottom:0;
+        font-weight:600;
+    ">
+        ${foto.beschreibung}
+    </p>
+` : ""}
 
             <br><br>
 
